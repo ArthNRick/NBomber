@@ -3,7 +3,7 @@ module internal NBomber.Domain.Concurrency.Scheduler.ConstantActorScheduler
 open System.Collections.Generic
 open System.Threading.Tasks
 
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks.NonAffine
 
 open NBomber.Extensions.InternalExtensions
 open NBomber.Domain.Concurrency
@@ -56,7 +56,7 @@ type ConstantActorScheduler(dep: ActorDep) =
             let startedActorTask = actor.ExecSteps()
             _workingActors.[startedActorTask] <- actor
 
-        task {
+        unitTask {
             do! Task.Yield()
 
             while not _stop || not dep.CancellationToken.IsCancellationRequested do

@@ -8,7 +8,7 @@ open System.Threading.Tasks
 
 open Nessos.Streams
 open Serilog
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks.NonAffine
 
 open NBomber
 open NBomber.Extensions.InternalExtensions
@@ -79,7 +79,7 @@ let execStep (step: Step, globalTimer: Stopwatch) = task {
             return { Response = Response.Fail(ex); StartTimeMs = startTime; LatencyMs = int latency }
 }
 
-let execSteps (dep: StepDep, steps: Step list, allScnResponses: (ResizeArray<StepResponse>)[]) = task {
+let execSteps (dep: StepDep, steps: Step list, allScnResponses: (ResizeArray<StepResponse>)[]) = unitTask {
 
     let data = Dict.empty
     let mutable skipStep = false

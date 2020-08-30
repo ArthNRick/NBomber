@@ -8,7 +8,7 @@ open System.Runtime.InteropServices
 
 open Microsoft.Extensions.Configuration
 open Nessos.Streams
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks.NonAffine
 open FsToolkit.ErrorHandling
 
 open NBomber.Contracts
@@ -89,7 +89,7 @@ type internal TestHost(dep: IGlobalDependency, registeredScenarios: Scenario lis
         let defaultScnContext = Scenario.ScenarioContext.create(getCurrentNodeInfo(), _cancelToken.Token, dep.Logger)
         TestHostScenario.cleanScenarios(dep, defaultScnContext, _targetScenarios)
 
-    let startBombing (isWarmUp) = task {
+    let startBombing (isWarmUp) = unitTask {
         _scnSchedulers <- createScenarioSchedulers(_targetScenarios)
         let progressBars = TestHostConsole.displayBombingProgress(dep, _scnSchedulers, isWarmUp)
         do! _scnSchedulers |> List.map(fun x -> x.Start(isWarmUp)) |> Task.WhenAll
@@ -122,7 +122,7 @@ type internal TestHost(dep: IGlobalDependency, registeredScenarios: Scenario lis
             return AppError.createResult(InitScenarioError e)
     }
 
-    member x.StartWarmUp() = task {
+    member x.StartWarmUp() = unitTask {
         _stopped <- false
         _currentOperation <- NodeOperationType.WarmUp
         do! Task.Yield()
@@ -135,7 +135,7 @@ type internal TestHost(dep: IGlobalDependency, registeredScenarios: Scenario lis
         _currentOperation <- NodeOperationType.None
     }
 
-    member x.StartBombing() = task {
+    member x.StartBombing() = unitTask {
         _stopped <- false
         _currentOperation <- NodeOperationType.Bombing
         do! Task.Yield()
@@ -148,7 +148,7 @@ type internal TestHost(dep: IGlobalDependency, registeredScenarios: Scenario lis
         _currentOperation <- NodeOperationType.Complete
     }
 
-    member x.StopScenarios([<Optional;DefaultParameterValue("":string)>]reason: string) = task {
+    member x.StopScenarios([<Optional;DefaultParameterValue("":string)>]reason: string) = unitTask {
         if _currentOperation <> NodeOperationType.Stop && _stopped = false then
             _currentOperation <- NodeOperationType.Stop
             do! Task.Yield()

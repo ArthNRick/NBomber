@@ -6,7 +6,7 @@ open System.Threading.Tasks
 
 open Nessos.Streams
 open Serilog
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks.NonAffine
 
 open NBomber.Extensions
 open NBomber.Contracts
@@ -46,7 +46,7 @@ type ScenarioActor(dep: ActorDep, correlationId: CorrelationId) =
     member x.LeaveScheduler() =
         _reserved <- false
 
-    member x.ExecSteps() = task {
+    member x.ExecSteps() = unitTask {
         if _reserved then
             _working <- true
             _currentTask <- Step.execSteps(_stepDep, dep.Scenario.Steps, _allScnResponses)

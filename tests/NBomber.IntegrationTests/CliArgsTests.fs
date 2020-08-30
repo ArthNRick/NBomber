@@ -2,7 +2,7 @@ module Tests.CliArgs
 
 open System.IO
 
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks.NonAffine
 open Swensen.Unquote
 open Xunit
 
