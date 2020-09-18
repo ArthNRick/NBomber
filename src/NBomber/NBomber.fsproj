@@ -50,6 +50,11 @@
     <Compile Include="DomainServices\NBomberRunner.fs" />
     <Compile Include="Api\Shared.fs" />
     <Compile Include="Api\FSharp.fs" />
+    <Compile Include="Api\Builder\StepBuilder.fs" />
+    <Compile Include="Api\Builder\ScenarioBuilder.fs" />
+    <Compile Include="Api\Builder\RunnerBuilder.fs" />
+    <Compile Include="Api\Builder\Builder.fs" />
+    <Compile Include="Api\Builder\Example.fs" />
     <Compile Include="Api\CSharp.fs" />
     <Compile Include="Plugins\PingPlugin.fs" />
   </ItemGroup>
