@@ -89,3 +89,38 @@ let test() =
         ]
 
     steps
+
+let influxReporter = Unchecked.defaultof<IReportingSink>
+let reportInterval = seconds 10
+
+let checkStepStats stepStats =
+    assert(stepStats.RPS > 100)
+    assert(stepStats.OkCount <> 0)
+    assert(float stepStats.FailCount / float stepStats.OkCount < 0.05)
+    assert(stepStats.Percent50 < 1000)
+
+let getExitCode checkStepStats test =
+    match NBomberRunner.run test with
+    | Error e ->
+        eprintfn "Error during performance test %s/%s:\n%A" test.TestSuite test.TestName e
+        1
+    | Ok stats ->
+        let mutable exitCode = 0
+        for scenario in stats.ScenarioStats do
+            for step in scenario.StepStats do
+                try
+                    checkStepStats step
+                with ex ->
+                    eprintfn "%s/%s failed: %A" scenario.ScenarioName step.StepName ex
+                    exitCode <- exitCode + 1
+        exitCode
+
+let runScenario scenario =
+    perftest "perf test examples" {
+      testSuite "performance tests suite"
+      scenarios [ scenario ]
+      reporter influxReporter reportInterval
+      reportHtml
+    }
+
+    |> getExitCode checkStepStats
